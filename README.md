@@ -1,7 +1,7 @@
 # EasyCredit: Simplified Credit Scoring for Moderate Transactions
 Introducing EasyCredit, a streamlined credit scoring system designed for moderate-sized transactions that don't require a comprehensive credit report. EasyCredit provides a machine-generated assessment of your financial reliability by securely analyzing your transaction history without disclosing sensitive details to your trading partners. This innovative system is perfect for situations where a transaction is significant enough to warrant an endorsement of your creditworthiness but doesn't necessitate a full credit check.
 
-EasyCredit leverages cutting-edge technologies such as Multi-Party Computation (MPC) and Zero-Knowledge Proofs to ensure the highest levels of security, privacy, and efficiency. By employing these advanced techniques, EasyCredit guarantees that your financial information remains confidential throughout the credit scoring process.
+EasyCredit leverages technologies including Multi-Party Computation (MPC), Zero-Knowledge Proofs and neural networks to ensure the highest levels of security, privacy, and efficiency. By employing these advanced techniques, EasyCredit guarantees that your financial information remains confidential throughout the credit scoring process.
 
 ## Example Workflow:
 User0 (the trading partner requesting an individual's trustworthiness) initiates the process by sending a request for an EasyCredit score and registering with the server to obtain a unique key.
