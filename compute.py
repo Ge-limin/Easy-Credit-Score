@@ -3,12 +3,15 @@ from mpyc.runtime import mpc
 
 # With 3 parties:
 #   python compute.py -M3 -I0 --no-log
+#   python compute.py -M3 -I1 --no-log
+#   python compute.py -M3 -I2 --no-log
 async def main():
-    sec_int = mpc.SecInt(16)
+    secint = mpc.SecInt(16)
+    input('Please tell us who are you?\n')
     print('Please wait for other parties to join...')
     await mpc.start()
     print('All parties have joined')
-    print('Please input the most recent 3 transactions that happened between you and the customer')
+    print('Please input the most recent one transaction that happened between you and the customer')
     """Asks about the most recent 3 transactions"""
     weighted_scores = []
     for _ in range(3):
@@ -18,20 +21,15 @@ async def main():
         month_weight = get_weight_by_months(months_ago)
         amount_weight = get_weight_by_amount(amount)
 
-        weighted_score = month_weight * amount_weight
+        weighted_score = int(month_weight * amount_weight * 100)
         weighted_scores.append(weighted_score)
-
         print(f"The approximate scores is: {weighted_score}")
 
-    for i, score in enumerate(weighted_scores):
-        recent_transaction_products = mpc.input(sec_int(score))
-
-        total_scores = sum(recent_transaction_products)
-        max_score = mpc.max(recent_transaction_products)
+        all_scores = mpc.input(secint(weighted_score))
         m = len(mpc.parties)
+        sum_scores = sum(all_scores)
 
-        print('Average score of recent transaction:', await mpc.output(total_scores) / m)
-        print('Maximum score of recent transaction:', await mpc.output(max_score))
+        print('Average score of recent transaction from all agencies is:', await mpc.output(sum_scores) / m)
 
     await mpc.shutdown()
 
