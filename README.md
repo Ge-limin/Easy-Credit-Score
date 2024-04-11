@@ -103,10 +103,10 @@ Example:
 import numpy as np
 from tensorflow.keras.models import load_model
 
-# Load the pre-trained model
+"""Load the pre-trained model"""
 model = load_model("checkpoint.h5")
 
-# Prepare the input data
+"""Prepare the input data"""
 new_data = pd.DataFrame({
     'Age': [30],
     'Occupation': ['Salaried'],
@@ -114,17 +114,17 @@ new_data = pd.DataFrame({
     ...
 })
 
-# Preprocess the input data
+"""Preprocess the input data"""
 new_data = preprocess_data(new_data)
 new_data = handle_outliers(new_data)
 
 new_data[numeric_features] = new_data[numeric_features].fillna(new_data[numeric_features].median())
 new_data['Occupation'] = new_data['Occupation'].fillna(most_frequent_occupation)
 
-# Transform the input data
+"""Transform the input data"""
 new_data_transformed = preprocessor.transform(new_data[useful_features])
 
-# Make predictions
+"""Make predictions"""
 predictions = model.predict(new_data_transformed)
 predicted_classes = np.argmax(predictions, axis=1)`
 
