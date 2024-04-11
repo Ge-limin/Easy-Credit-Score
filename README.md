@@ -27,10 +27,10 @@ This repository contains a pre-trained model for predicting credit scores based 
 
 Requirements
 
-Python 3.x
-pandas
-numpy
-scikit-learn
+Python 3.x,
+pandas,
+numpy,
+scikit-learn,
 tensorflow
 
 Usage
@@ -98,35 +98,7 @@ Use np.argmax to get the predicted class index:
 1: 'Standard'
 2: 'Good'
 
-Example:
-`import pandas as pd
-import numpy as np
-from tensorflow.keras.models import load_model
 
-"""Load the pre-trained model"""
-model = load_model("checkpoint.h5")
-
-"""Prepare the input data"""
-new_data = pd.DataFrame({
-    'Age': [30],
-    'Occupation': ['Salaried'],
-    'Annual_Income': [50000],
-    ...
-})
-
-"""Preprocess the input data"""
-new_data = preprocess_data(new_data)
-new_data = handle_outliers(new_data)
-
-new_data[numeric_features] = new_data[numeric_features].fillna(new_data[numeric_features].median())
-new_data['Occupation'] = new_data['Occupation'].fillna(most_frequent_occupation)
-
-"""Transform the input data"""
-new_data_transformed = preprocessor.transform(new_data[useful_features])
-
-"""Make predictions"""
-predictions = model.predict(new_data_transformed)
-predicted_classes = np.argmax(predictions, axis=1)`
 
 
 
