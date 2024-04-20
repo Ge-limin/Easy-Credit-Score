@@ -10,7 +10,7 @@ from sklearn.metrics import accuracy_score, confusion_matrix, classification_rep
 import numpy as np
 
 # read train file and test file
-train_file_path = 'train1_utf8.csv'
+train_file_path = 'train.csv'
 # test_file_path = '/Users/jingxinshi/Desktop/eps/test.csv'
 
 df = pd.read_csv(train_file_path)
