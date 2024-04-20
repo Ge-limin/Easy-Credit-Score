@@ -10,11 +10,11 @@ from sklearn.metrics import accuracy_score, confusion_matrix, classification_rep
 import numpy as np
 
 # read train file and test file
-train_file_path = '/Users/jingxinshi/Desktop/eps/train.csv'
-#test_file_path = '/Users/jingxinshi/Desktop/eps/test.csv'
+train_file_path = 'train1_utf8.csv'
+# test_file_path = '/Users/jingxinshi/Desktop/eps/test.csv'
 
 df = pd.read_csv(train_file_path)
-#test_df = pd.read_csv(test_file_path)
+# test_df = pd.read_csv(test_file_path)
 
 # define boundary
 age_lower_bound, age_upper_bound = 18, 100
@@ -34,61 +34,46 @@ amount_invested_monthly_lower_bound, amount_invested_monthly_upper_bound = 0, 10
 monthly_balance_lower_bound, monthly_balance_upper_bound = -100000, 1000000
 
 
-
-
 def preprocess_data(df):
-
     df['Credit_History_Age'] = df['Credit_History_Age'].str.extract('(\d+)').astype(float)
-
 
     df['Age'] = pd.to_numeric(df['Age'], errors='coerce')
 
-
     df['Annual_Income'] = pd.to_numeric(df['Annual_Income'].str.replace(',', '').str.replace('_', ''), errors='coerce')
-
 
     df['Monthly_Inhand_Salary'] = pd.to_numeric(df['Monthly_Inhand_Salary'], errors='coerce')
 
-
     df['Num_of_Loan'] = pd.to_numeric(df['Num_of_Loan'], errors='coerce')
 
-
     df['Delay_from_due_date'] = pd.to_numeric(df['Delay_from_due_date'], errors='coerce')
-
 
     df['Changed_Credit_Limit'] = pd.to_numeric(
         df['Changed_Credit_Limit'].str.extract('([-+]?\d*\.\d+|\d+)', expand=False), errors='coerce')
 
-
     df['Num_of_Delayed_Payment'] = pd.to_numeric(df['Num_of_Delayed_Payment'], errors='coerce')
-
 
     df['Num_Credit_Inquiries'] = pd.to_numeric(df['Num_Credit_Inquiries'], errors='coerce')
 
-
     df['Credit_Utilization_Ratio'] = pd.to_numeric(df['Credit_Utilization_Ratio'], errors='coerce')
 
-
     df['Total_EMI_per_month'] = pd.to_numeric(df['Total_EMI_per_month'], errors='coerce')
-
 
     df['Outstanding_Debt'] = pd.to_numeric(df['Outstanding_Debt'].str.extract('([-+]?\d*\.\d+|\d+)', expand=False),
                                            errors='coerce')
 
-
     df['Amount_invested_monthly'] = pd.to_numeric(
         df['Amount_invested_monthly'].str.extract('([-+]?\d*\.\d+|\d+)', expand=False), errors='coerce')
-
 
     df['Monthly_Balance'] = pd.to_numeric(df['Monthly_Balance'].str.extract('([-+]?\d*\.\d+|\d+)', expand=False),
                                           errors='coerce')
 
     return df
 
+
 df = preprocess_data(df)
 
-def handle_outliers(df):
 
+def handle_outliers(df):
     df['Age'] = np.where(df['Age'] > age_upper_bound, np.nan, df['Age'])
     df['Age'] = np.where(df['Age'] < age_lower_bound, np.nan, df['Age'])
 
@@ -155,10 +140,11 @@ def handle_outliers(df):
     df['Monthly_Balance'] = np.where(df['Monthly_Balance'] < monthly_balance_lower_bound, np.nan, df['Monthly_Balance'])
 
     return df
+
+
 df = handle_outliers(df)
 
-
-#pick useful variables
+# pick useful variables
 useful_features = [
     'Age', 'Occupation', 'Annual_Income', 'Monthly_Inhand_Salary',
     'Num_Bank_Accounts', 'Num_Credit_Card', 'Interest_Rate', 'Num_of_Loan',
@@ -214,7 +200,7 @@ X_test_transformed = preprocessor.transform(X_test)
 # ])
 
 model = tf.keras.Sequential([
-    tf.keras.layers.Reshape((X_train_transformed.shape[1],1)),
+    tf.keras.layers.Reshape((X_train_transformed.shape[1], 1)),
     tf.keras.layers.Conv1D(filters=32, kernel_size=3, activation='relu'),
     tf.keras.layers.MaxPooling1D(pool_size=2),
     tf.keras.layers.Flatten(),
@@ -232,9 +218,9 @@ model.compile(optimizer=opt,
 X_train_transformed[np.isnan(X_train_transformed)] = 0
 X_test_transformed[np.isnan(X_test_transformed)] = 0
 
-model.fit(X_train_transformed, y_train, epochs=10, batch_size=32, validation_split=0.2, callbacks=[reduce_lr])#, class_weight={i:j for i,j in enumerate(class_weights.tolist())})
+model.fit(X_train_transformed, y_train, epochs=10, batch_size=32, validation_split=0.2,
+          callbacks=[reduce_lr])  # , class_weight={i:j for i,j in enumerate(class_weights.tolist())})
 print(model.summary())
-
 
 y_pred_prob = model.predict(X_test_transformed)
 y_pred = np.argmax(y_pred_prob, axis=1)
