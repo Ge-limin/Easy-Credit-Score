@@ -34,6 +34,8 @@ amount_invested_monthly_lower_bound, amount_invested_monthly_upper_bound = 0, 10
 monthly_balance_lower_bound, monthly_balance_upper_bound = -100000, 1000000
 
 
+# todo @Jingxin, call homomorphic.py to encrypt some sensitive data before training the model
+
 def preprocess_data(df):
     df['Credit_History_Age'] = df['Credit_History_Age'].str.extract('(\d+)').astype(float)
 
