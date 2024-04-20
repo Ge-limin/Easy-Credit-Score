@@ -2,9 +2,9 @@ from mpyc.runtime import mpc
 
 
 # With 3 parties:
-#   python3 compute.py -M3 -I0 --no-log
-#   python3 compute.py -M3 -I1 --no-log
-#   python3 compute.py -M3 -I2 --no-log
+#   python3 mpc.py -M3 -I0 --no-log
+#   python3 mpc.py -M3 -I1 --no-log
+#   python3 mpc.py -M3 -I2 --no-log
 async def main():
     secint = mpc.SecInt(16)
     input('Please tell us who are you?\n')

@@ -3,12 +3,26 @@ from get_factor import *
 import sys
 
 # With 3 parties:
-#   python3 compute.py -M3 -I0 --no-log
-#   python3 compute.py -M3 -I1 --no-log
-#   python3 compute.py -M3 -I2 --no-log
+#   python3 mpc.py -M3 -I0 --no-log
+#   python3 mpc.py -M3 -I1 --no-log
+#   python3 mpc.py -M3 -I2 --no-log
 
 
 async def main():
+    """
+    ideal workflow:
+        1. Agencies call mpc.py to generate some aggregated statistics
+        2. Agencies call homomorphic.py to encrypt the other data that the agency have
+        3. Combining homomorphic encrypted data and the aggregated statistics to generate a row of data
+        4. Run the AI model from ml.py to get a score from this row of data
+        5. (optional) Agencies use pub/sec key to request and decrypt this final result
+    demo workflow:
+        1. Agencies call mpc.py to generate some aggregated statistics
+        2. Agencies call homomorphic.py to encrypt the other data that the agency have
+        3. Combining homomorphic encrypted data and the aggregated statistics, **call synthetic.py to MAP TO** a row of **SYNTHETIC** data
+        4. Run the AI model from ml.py to get a score from this row of data
+        5. **RETURN THE SCORE DIRECTLY**
+    """
     secflt = mpc.SecFlt(16)
 
     await mpc.start()
