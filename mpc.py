@@ -5,49 +5,42 @@ from mpyc.runtime import mpc
 #   python3 mpc.py -M3 -I0 --no-log
 #   python3 mpc.py -M3 -I1 --no-log
 #   python3 mpc.py -M3 -I2 --no-log
-async def main():
-    secint = mpc.SecInt(16)
+
+async def execute():
+    sec_int = mpc.SecInt(16)
     input('Please tell us who are you?\n')
     print('Please wait for other parties to join...')
     await mpc.start()
     print('All parties have joined')
     print('Please input the most recent one transaction that happened between you and the customer')
-    """Asks about the most recent 3 transactions"""
-    weighted_scores = []
-    
-    months_ago = int(input('How many months ago did this transaction happen? '))
-    amount = int(input('Enter the amount of the transaction in dollars: '))
 
-    month_weight = get_weight_by_months(months_ago)
-    amount_weight = get_weight_by_amount(amount)
-
-    weighted_score = int(month_weight * amount_weight * 100)
-    weighted_scores.append(weighted_score)
-    print(f"The approximate scores is: {weighted_score}")
-
-    all_scores = mpc.input(secint(weighted_score))
-    m = len(mpc.parties)
-    sum_scores = sum(all_scores)
-
-    print('Average score of recent transaction from all agencies is:', await mpc.output(sum_scores) / m)
+    avg_payment_score = await cal_score(sec_int, "payment")
+    avg_delay_score = await cal_score(sec_int, "delay")
 
     await mpc.shutdown()
 
+    return {"payment_score": avg_payment_score, "delay_score": avg_delay_score}
+
+
+async def cal_score(sec_int, transaction_type):
+    weighted_scores = []
+    months_ago = int(input(f'How many months ago did last {transaction_type} happen?, If never, enter 100: '))
+    amount = int(input(f'Enter the amount of the {transaction_type} in dollars: '))
+    month_weight = get_weight_by_months(months_ago)
+    amount_weight = get_weight_by_amount(amount)
+    weighted_score = int(month_weight * amount_weight)
+    weighted_scores.append(weighted_score)
+    print(f"The approximate scores of {transaction_type} is: {weighted_score}")
+    all_scores = mpc.input(sec_int(weighted_score))
+    m = len(mpc.parties)
+    sum_scores = sum(all_scores)
+    avg_score = await mpc.output(sum_scores) / m
+    print(f'Average score of recent {transaction_type} from all agencies is: {avg_score}')
+    return avg_score
+
 
 def get_weight_by_months(months):
-    weights = {
-        0: 1.0,
-        1: 0.9,
-        2: 0.8,
-        3: 0.7,
-        4: 0.6,
-        5: 0.5,
-        6: 0.4,
-        7: 0.3,
-        8: 0.2,
-        9: 0.1,
-    }
-    return weights.get(months, 0.0)
+    return 100 - months if months < 100 else 0
 
 
 def get_weight_by_amount(amount):
@@ -64,4 +57,4 @@ def get_weight_by_amount(amount):
     return 0.0
 
 
-mpc.run(main())
+print(mpc.run(execute()))
