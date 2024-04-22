@@ -1,6 +1,8 @@
 from mpyc.runtime import mpc
-from get_factor import *
-import sys
+
+from mpc import cal_score, get_agency_info
+from synthetic import generate
+# from synthetic import generate
 
 # With 3 parties:
 #   python3 mpc.py -M3 -I0 --no-log
@@ -24,49 +26,32 @@ async def main():
         5. **RETURN THE SCORE DIRECTLY**
     """
     secflt = mpc.SecFlt(16)
+    sec_int = mpc.SecInt(16)
 
+    print('Please wait for other parties to join...')
     await mpc.start()
-
-    identity = input('Who are you? \
-                         \nA: user \
-                         \nB: rental agency \
-                         \nC: utility company \
-                         \nD: landlord reference\n')
+    print('All parties have joined! Proceeding...')
     
-    # TODO: ask for info
-    # info = input('provide info')
+    # print(mpc.pid)
 
-    match identity:
-        case 'A':
-            # TODO: load json or csv and pass to model
-            model_predicted_risk = compute_model_prediction([])
-            factor = model_predicted_risk
-        # TODO: figure out what info needed from rental/utility/landlord and how to compute
-        case 'B':
-            rental_score = compute_rental_score([])
-            factor = rental_score
-        case 'C':
-            utility_score = compute_utility_score([])
-            factor = utility_score
-        case 'D':
-            landlordref_score = compute_landlordref_score([])
-            factor = landlordref_score
-        case _:
-            print("invalid identity")
-            sys.exit(1)
+    if mpc.pid == 0:
+        print("Welcome, user! Waiting for agencies to provide information...")
 
+    mpc_data = await get_agency_info()
+    print(mpc_data)
+
+    if mpc.pid == 0:
+        print("Calculating your credit risk now.")
+        user_generated_data = generate(mpc_data)
+        print(user_generated_data)
+        # TODO: load model and use data for prediction, print and return
+    else:
+        print("Thank you for providing info for user!")
     
-    print(factor)
-    mpc_info = mpc.input(secflt(factor))
 
-
-    combine = sum(mpc_info)
-
-    total_result = await mpc.output(combine)
-    
-    print("overall score: ", total_result)
 
     await mpc.shutdown()
 
 
 mpc.run(main())
+
