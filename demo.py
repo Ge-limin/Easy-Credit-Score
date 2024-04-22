@@ -1,13 +1,14 @@
 from mpyc.runtime import mpc
 
-from mpc import cal_score, get_agency_info
+from evaluate import predict_credit_score
+from mpc import get_agency_info
 from synthetic import generate
-# from synthetic import generate
+import phe
 
-# With 3 parties:
-#   python3 mpc.py -M3 -I0 --no-log
-#   python3 mpc.py -M3 -I1 --no-log
-#   python3 mpc.py -M3 -I2 --no-log
+
+# With 2 parties:
+#   python3 mpc.py -M2 -I0 --no-log
+#   python3 mpc.py -M2 -I1 --no-log
 
 
 async def main():
@@ -32,10 +33,12 @@ async def main():
     await mpc.start()
     print('All parties have joined! Proceeding...')
     
-    # print(mpc.pid)
+    print(mpc.pid)
 
     if mpc.pid == 0:
         print("Welcome, user! Waiting for agencies to provide information...")
+
+    # pub_key, priv_key = phe.generate_paillier_keypair(n_length=5)
 
     mpc_data = await get_agency_info()
     print(mpc_data)
@@ -45,6 +48,8 @@ async def main():
         user_generated_data = generate(mpc_data)
         print(user_generated_data)
         # TODO: load model and use data for prediction, print and return
+        result = predict_credit_score(user_generated_data)
+        print(result)
     else:
         print("Thank you for providing info for user!")
     

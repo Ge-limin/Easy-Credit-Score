@@ -1,9 +1,14 @@
-import ml
+
+
+delay_from_due_date_lower_bound, delay_from_due_date_upper_bound = 0, 180
+num_delayed_payments_lower_bound, num_delayed_payments_upper_bound = 0, 50
+num_credit_inquiries_lower_bound, num_credit_inquiries_upper_bound = 0, 20
+credit_utilization_ratio_lower_bound, credit_utilization_ratio_upper_bound = 0, 1
 
 
 def generate(mpc_result):
     synthetic_data = generate_from_mpc_result(mpc_result)
-    generate_from_agency(synthetic_data, None)
+    # generate_from_agency(synthetic_data, None)
     return synthetic_data
 
 
@@ -26,16 +31,16 @@ def generate_from_mpc_result(mpc_result):
 
     # below are based on delay_score
     Delay_from_due_date = map_num(mpc_result['delay_score'], 0, 100,
-                                  ml.delay_from_due_date_lower_bound, ml.delay_from_due_date_upper_bound)
+                                  delay_from_due_date_lower_bound, delay_from_due_date_upper_bound)
     Num_of_Delayed_Payment = map_num(mpc_result['delay_score'], 0, 100,
-                                     ml.num_delayed_payments_lower_bound, ml.num_delayed_payments_upper_bound)
+                                     num_delayed_payments_lower_bound, num_delayed_payments_upper_bound)
     Changed_Credit_Limit = map_num(mpc_result['delay_score'], 0, 100, 30, -5)
     Num_Credit_Inquiries = map_num(mpc_result['delay_score'], 0, 100,
-                                   ml.num_credit_inquiries_lower_bound, ml.num_credit_inquiries_upper_bound)
+                                   num_credit_inquiries_lower_bound, num_credit_inquiries_upper_bound)
     Credit_Mix = map_from_num_to_str(mpc_result['delay_score'], 0, 100, ['Good','Standard','Bad'])
     Outstanding_Debt = map_num(mpc_result['delay_score'], 0, 100, 0, 5000)
     Credit_Utilization_Ratio = map_num(mpc_result['delay_score'], 0, 100,
-                                       ml.credit_utilization_ratio_lower_bound, ml.credit_utilization_ratio_upper_bound)
+                                       credit_utilization_ratio_lower_bound, credit_utilization_ratio_upper_bound)
 
     # below are based on payment_score
     Payment_of_Min_Amount = map_from_num_to_str(mpc_result['payment_score'], 0, 100,

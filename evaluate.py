@@ -9,8 +9,8 @@ import pickle
 import joblib
 
 def predict_credit_score(json_data):
-    data = json.loads(json_data)
-    test_data = pd.DataFrame([data])
+    # data = json.loads(json_data)
+    test_data = pd.DataFrame([json_data])
 
     numeric_features = ['Age', 'Annual_Income', 'Monthly_Inhand_Salary', 'Num_Bank_Accounts', 'Num_Credit_Card', 'Interest_Rate', 'Num_of_Loan', 'Delay_from_due_date', 'Num_of_Delayed_Payment', 'Changed_Credit_Limit', 'Num_Credit_Inquiries', 'Outstanding_Debt', 'Credit_Utilization_Ratio', 'Credit_History_Age', 'Total_EMI_per_month', 'Amount_invested_monthly', 'Monthly_Balance']
     categorical_features = ['Occupation', 'Credit_Mix', 'Payment_of_Min_Amount']
@@ -67,5 +67,5 @@ json_data = '''
 }
 '''
 
-predicted_credit_score = predict_credit_score(json_data)
-print("Predicted credit classification:", predicted_credit_score)
+# predicted_credit_score = predict_credit_score(json_data)
+# print("Predicted credit classification:", predicted_credit_score)
