@@ -31,6 +31,8 @@ async def cal_score(sec_int, transaction_type):
         month_weight = get_weight_by_months(months_ago)
         amount_weight = get_weight_by_amount(amount)
         weighted_score = int(month_weight * amount_weight)
+        # TODO: add phe encryption
+        # weighted_score = phe_pub_key.encrypt(weighted_score)
         weighted_scores.append(weighted_score)
         print(f"The approximate scores of {transaction_type} is: {weighted_score}")
     

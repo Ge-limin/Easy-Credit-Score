@@ -4,7 +4,7 @@ import pandas as pd
 from sklearn.compose import ColumnTransformer
 from sklearn.preprocessing import StandardScaler, OneHotEncoder
 from sklearn.pipeline import Pipeline
-import tensorflow as tf
+from tensorflow.keras.models import load_model
 import pickle
 import joblib
 
@@ -33,7 +33,7 @@ def predict_credit_score(json_data):
     test_data_transformed[np.isnan(test_data_transformed)] = 0
     test_data_transformed = test_data_transformed.reshape((1, test_data_transformed.shape[1], 1))
 
-    model = tf.keras.models.load_model('checkpoint.h5')
+    model = load_model('checkpoint.h5')
 
     y_pred_prob = model.predict(test_data_transformed)
     y_pred = np.argmax(y_pred_prob, axis=1)
@@ -42,8 +42,7 @@ def predict_credit_score(json_data):
     predicted_credit_score = credit_score_mapping[y_pred[0]]
     return predicted_credit_score
 
-json_data = '''
-{
+json_data = {
     "Age": 25,
     "Occupation": "Teacher",
     "Annual_Income": 50000,
@@ -59,13 +58,13 @@ json_data = '''
     "Credit_Mix": "Standard",
     "Outstanding_Debt": 5000,
     "Credit_Utilization_Ratio": 0.3,
-    "Credit_History_Age": 2,
+    "Credit_History_Age": "17 Years and 5 Months",
     "Payment_of_Min_Amount": "No",
     "Total_EMI_per_month": 500,
     "Amount_invested_monthly": 1000,
     "Monthly_Balance": 3000
 }
-'''
+
 
 # predicted_credit_score = predict_credit_score(json_data)
 # print("Predicted credit classification:", predicted_credit_score)

@@ -26,8 +26,6 @@ async def main():
         4. Run the AI model from ml.py to get a score from this row of data
         5. **RETURN THE SCORE DIRECTLY**
     """
-    secflt = mpc.SecFlt(16)
-    sec_int = mpc.SecInt(16)
 
     print('Please wait for other parties to join...')
     await mpc.start()

@@ -5,10 +5,11 @@ num_delayed_payments_lower_bound, num_delayed_payments_upper_bound = 0, 50
 num_credit_inquiries_lower_bound, num_credit_inquiries_upper_bound = 0, 20
 credit_utilization_ratio_lower_bound, credit_utilization_ratio_upper_bound = 0, 1
 
+from evaluate import json_data
 
 def generate(mpc_result):
     synthetic_data = generate_from_mpc_result(mpc_result)
-    # generate_from_agency(synthetic_data, None)
+    generate_from_agency(synthetic_data, json_data)
     return synthetic_data
 
 
@@ -28,6 +29,7 @@ def generate_from_mpc_result(mpc_result):
     """use the result from the MPC computation to generate synthetic data that is compatible with the AI model"""
     # based on avg from the training data
     Credit_History_Age = "17 Years and 5 Months"
+    Credit_History_Age = 17.42
 
     # below are based on delay_score
     Delay_from_due_date = map_num(mpc_result['delay_score'], 0, 100,
