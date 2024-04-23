@@ -1,44 +1,42 @@
 from mpyc.runtime import mpc
-# from evaluate import predict_credit_score
+from synthetic import generate
 from evaluate import predict_credit_score
-from mpc import get_agency_info
-# from synthetic import generate
+from mpc_calc import get_agency_info
 import phe
 
-from synthetic import generate
-
-
 # With 2 parties:
-#   python3 mpc.py -M2 -I0 --no-log
-#   python3 mpc.py -M2 -I1 --no-log
+#   python3 demo.py -M2 -I0 --no-log
+#   python3 demo.py -M2 -I1 --no-log
 
 
 async def main():
     """
     ideal workflow:
-        1. Agencies call mpc.py to generate some aggregated statistics
-        2. Agencies call homomorphic.py to encrypt the other data that the agency have
-        3. Combining homomorphic encrypted data and the aggregated statistics to generate a row of data
-        4. Run the AI model from ml.py to get a score from this row of data
-        5. (optional) Agencies use pub/sec key to request and decrypt this final result
+        1. Agencies call get_agency_info() from mpc_calc.py to generate some aggregated statistics
+        2. Agencies use public key from user to encrypt their data before aggregation
+        3. User program combines homomorphic encrypted user data json and aggregated statistics
+           to generate a row of data
+        4. Run the AI model from ml.py to predict a credit risk assessment from this row of data
+        5. (optional) User and requesting organization use pub/priv key to request and decrypt this final result
     demo workflow:
-        1. Agencies call mpc.py to generate some aggregated statistics
-        2. Agencies call homomorphic.py to encrypt the other data that the agency have
-        3. Combining homomorphic encrypted data and the aggregated statistics, **call synthetic.py to MAP TO** a row of **SYNTHETIC** data
-        4. Run the AI model from ml.py to get a score from this row of data
-        5. **RETURN THE SCORE DIRECTLY**
+        1. Agencies call get_agency_info() from mpc_calc.py to generate some aggregated statistics
+        2. Agencies use public key from user to encrypt their data before aggregation
+        3. User program combines homomorphic encrypted user data json and aggregated statistics, 
+           **call generate() in synthetic.py to MAP TO** a row of **SYNTHETIC** data
+        4. Run the AI model from ml.py to predict a credit risk assessment from this row of data
+        5. **RETURN THE RISK DIRECTLY**
     """
-    sec_int = mpc.SecInt(16)
     print('Please wait for other parties to join...')
     await mpc.start()
     print('All parties have joined! Proceeding...')
     
-   
-    print("Welcome, user! Waiting for agencies to provide information...")
-
+    sec_int = mpc.SecInt(16)
     pub_n = 0
     priv_key = None
+    pub_key = None
+
     if mpc.pid == 0:
+        print("Welcome, user! Waiting for agencies to provide information...")
         pub_key, priv_key = phe.generate_paillier_keypair(n_length = 16)
         pub_n = pub_key.n
     
@@ -48,8 +46,6 @@ async def main():
     if pub_n: 
         pub_key = phe.PaillierPublicKey(pub_n)
 
-
-  
     pay, delay = await get_agency_info(pub_key)
 
     if mpc.pid == 0:
