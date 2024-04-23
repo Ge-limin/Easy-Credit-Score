@@ -12,6 +12,7 @@ async def get_agency_info():
     avg_delay_score = -100
 
     if mpc.pid != 0:
+        input('What is your relationship with the user?\n')
         print('Please provide info about the most recent transaction between you and the user.')
 
     avg_payment_score = await cal_score(sec_int, "payment")

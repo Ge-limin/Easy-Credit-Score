@@ -39,17 +39,16 @@ async def main():
     # pub_key, priv_key = phe.generate_paillier_keypair(n_length=5)
 
     mpc_data = await get_agency_info()
-    print(mpc_data)
+    # print(mpc_data)
 
     if mpc.pid == 0:
         print("Calculating your credit risk now.")
         user_generated_data = generate(mpc_data)
-        print(user_generated_data)
-        # TODO: load model and use data for prediction, print and return
+        # print(user_generated_data)
         result = predict_credit_score(user_generated_data)
-        print(result)
+        print("Your predicted credit risk is: ", result)
     else:
-        print("Thank you for providing info for user!")
+        print("Thank you for providing info for the user!")
     
 
 
