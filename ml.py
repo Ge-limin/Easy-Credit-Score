@@ -9,14 +9,7 @@ from sklearn.impute import SimpleImputer
 from sklearn.metrics import accuracy_score, confusion_matrix, classification_report
 import numpy as np
 
-# read train file and test file
-train_file_path = 'train.csv'
-# test_file_path = '/Users/jingxinshi/Desktop/eps/test.csv'
-
-df = pd.read_csv(train_file_path)
-# test_df = pd.read_csv(test_file_path)
-
-# define boundary
+# define boundaries
 age_lower_bound, age_upper_bound = 18, 100
 annual_income_lower_bound, annual_income_upper_bound = 10000, 1000000
 monthly_salary_lower_bound, monthly_salary_upper_bound = 500, 100000
@@ -33,8 +26,6 @@ total_emi_lower_bound, total_emi_upper_bound = 0, 100000
 amount_invested_monthly_lower_bound, amount_invested_monthly_upper_bound = 0, 100000
 monthly_balance_lower_bound, monthly_balance_upper_bound = -100000, 1000000
 
-
-# todo @Jingxin, call homomorphic.py to encrypt some sensitive data before training the model
 
 def preprocess_data(df):
     df['Credit_History_Age'] = df['Credit_History_Age'].str.extract('(\d+)').astype(float)
@@ -70,9 +61,6 @@ def preprocess_data(df):
                                           errors='coerce')
 
     return df
-
-
-df = preprocess_data(df)
 
 
 def handle_outliers(df):
@@ -144,8 +132,6 @@ def handle_outliers(df):
     return df
 
 
-df = handle_outliers(df)
-
 # pick useful variables
 useful_features = [
     'Age', 'Occupation', 'Annual_Income', 'Monthly_Inhand_Salary',
@@ -157,78 +143,90 @@ useful_features = [
     'Monthly_Balance'
 ]
 
-numeric_features = df[useful_features].select_dtypes(include=['float64', 'int64']).columns
+def train_model():
 
-df[numeric_features] = df[numeric_features].fillna(df[numeric_features].median())
+    # read train file and test file
+    train_file_path = 'train.csv'
+    # test_file_path = 'test.csv'
 
-most_frequent_occupation = df['Occupation'].mode()[0]
-df['Occupation'] = df['Occupation'].fillna(most_frequent_occupation)
+    df = pd.read_csv(train_file_path)
+    # test_df = pd.read_csv(test_file_path)
 
-df = df.dropna(subset=['Credit_Score'])
+    df = preprocess_data(df)
+    df = handle_outliers(df)
 
-credit_score_mapping = {'Good': 2, 'Standard': 1, 'Poor': 0}
-df['Credit_Score'] = df['Credit_Score'].map(credit_score_mapping)
+    numeric_features = df[useful_features].select_dtypes(include=['float64', 'int64']).columns
 
-X = df[useful_features]
-y = df['Credit_Score']
+    df[numeric_features] = df[numeric_features].fillna(df[numeric_features].median())
 
-class_weights = compute_class_weight('balanced', classes=np.unique(y), y=y)
-y = tf.keras.utils.to_categorical(y, num_classes=3)
+    most_frequent_occupation = df['Occupation'].mode()[0]
+    df['Occupation'] = df['Occupation'].fillna(most_frequent_occupation)
 
-X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+    df = df.dropna(subset=['Credit_Score'])
 
-categorical_features = X_train.select_dtypes(include=['object']).columns
+    credit_score_mapping = {'Good': 2, 'Standard': 1, 'Poor': 0}
+    df['Credit_Score'] = df['Credit_Score'].map(credit_score_mapping)
 
-numeric_transformer = Pipeline(steps=[
-    ('scaler', StandardScaler())])
+    X = df[useful_features]
+    y = df['Credit_Score']
 
-categorical_transformer = Pipeline(steps=[
-    ('onehot', OneHotEncoder(handle_unknown='ignore'))])
+    class_weights = compute_class_weight('balanced', classes=np.unique(y), y=y)
+    y = tf.keras.utils.to_categorical(y, num_classes=3)
 
-preprocessor = ColumnTransformer(
-    transformers=[
-        ('num', numeric_transformer, numeric_features),
-        ('cat', categorical_transformer, categorical_features)])
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
 
-X_train_transformed = preprocessor.fit_transform(X_train)
-X_test_transformed = preprocessor.transform(X_test)
+    categorical_features = X_train.select_dtypes(include=['object']).columns
 
-# model = tf.keras.Sequential([
-#     tf.keras.layers.Dense(64, activation='relu', input_shape=(X_train_transformed.shape[1],)),
-#     tf.keras.layers.Dense(32, activation='relu'),
-#     tf.keras.layers.Dense(16, activation='relu'),
-#     tf.keras.layers.Dense(8, activation='relu'),
-#     tf.keras.layers.Dense(3, activation='softmax')
-# ])
+    numeric_transformer = Pipeline(steps=[
+        ('scaler', StandardScaler())])
 
-model = tf.keras.Sequential([
-    tf.keras.layers.Reshape((X_train_transformed.shape[1], 1)),
-    tf.keras.layers.Conv1D(filters=32, kernel_size=3, activation='relu'),
-    tf.keras.layers.MaxPooling1D(pool_size=2),
-    tf.keras.layers.Flatten(),
-    tf.keras.layers.Dense(32, activation='relu'),
-    tf.keras.layers.Dense(16, activation='relu'),
-    tf.keras.layers.Dense(8, activation='relu'),
-    tf.keras.layers.Dense(3, activation='softmax')
-])
+    categorical_transformer = Pipeline(steps=[
+        ('onehot', OneHotEncoder(handle_unknown='ignore'))])
 
-reduce_lr = tf.keras.callbacks.ReduceLROnPlateau(monitor='val_loss', factor=0.5, patience=3, verbose=1, min_lr=1e-6)
-opt = tf.keras.optimizers.Adam(learning_rate=1e-3)
-model.compile(optimizer=opt,
-              loss='categorical_crossentropy',
-              metrics=['accuracy'])
-X_train_transformed[np.isnan(X_train_transformed)] = 0
-X_test_transformed[np.isnan(X_test_transformed)] = 0
+    preprocessor = ColumnTransformer(
+        transformers=[
+            ('num', numeric_transformer, numeric_features),
+            ('cat', categorical_transformer, categorical_features)])
 
-model.fit(X_train_transformed, y_train, epochs=10, batch_size=32, validation_split=0.2,
-          callbacks=[reduce_lr])  # , class_weight={i:j for i,j in enumerate(class_weights.tolist())})
-print(model.summary())
+    X_train_transformed = preprocessor.fit_transform(X_train)
+    X_test_transformed = preprocessor.transform(X_test)
 
-y_pred_prob = model.predict(X_test_transformed)
-y_pred = np.argmax(y_pred_prob, axis=1)
-y_test = np.argmax(y_test, axis=1)
+    # model = tf.keras.Sequential([
+    #     tf.keras.layers.Dense(64, activation='relu', input_shape=(X_train_transformed.shape[1],)),
+    #     tf.keras.layers.Dense(32, activation='relu'),
+    #     tf.keras.layers.Dense(16, activation='relu'),
+    #     tf.keras.layers.Dense(8, activation='relu'),
+    #     tf.keras.layers.Dense(3, activation='softmax')
+    # ])
 
-print("Accuracy:", accuracy_score(y_test, y_pred))
-print("Confusion Matrix:\n", confusion_matrix(y_test, y_pred))
-print("Classification Report:\n", classification_report(y_test, y_pred))
-model.save("checkpoint.h5")
+    model = tf.keras.Sequential([
+        tf.keras.layers.Reshape((X_train_transformed.shape[1], 1)),
+        tf.keras.layers.Conv1D(filters=32, kernel_size=3, activation='relu'),
+        tf.keras.layers.MaxPooling1D(pool_size=2),
+        tf.keras.layers.Flatten(),
+        tf.keras.layers.Dense(32, activation='relu'),
+        tf.keras.layers.Dense(16, activation='relu'),
+        tf.keras.layers.Dense(8, activation='relu'),
+        tf.keras.layers.Dense(3, activation='softmax')
+    ])
+
+    reduce_lr = tf.keras.callbacks.ReduceLROnPlateau(monitor='val_loss', factor=0.5, patience=3, verbose=1, min_lr=1e-6)
+    opt = tf.keras.optimizers.Adam(learning_rate=1e-3)
+    model.compile(optimizer=opt,
+                loss='categorical_crossentropy',
+                metrics=['accuracy'])
+    X_train_transformed[np.isnan(X_train_transformed)] = 0
+    X_test_transformed[np.isnan(X_test_transformed)] = 0
+
+    model.fit(X_train_transformed, y_train, epochs=10, batch_size=32, validation_split=0.2,
+            callbacks=[reduce_lr])  # , class_weight={i:j for i,j in enumerate(class_weights.tolist())})
+    print(model.summary())
+
+    y_pred_prob = model.predict(X_test_transformed)
+    y_pred = np.argmax(y_pred_prob, axis=1)
+    y_test = np.argmax(y_test, axis=1)
+
+    print("Accuracy:", accuracy_score(y_test, y_pred))
+    print("Confusion Matrix:\n", confusion_matrix(y_test, y_pred))
+    print("Classification Report:\n", classification_report(y_test, y_pred))
+    model.save("checkpoint.h5")

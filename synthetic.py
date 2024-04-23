@@ -1,15 +1,18 @@
 
+import json
+from ml import delay_from_due_date_lower_bound, delay_from_due_date_upper_bound, \
+    num_delayed_payments_lower_bound, num_delayed_payments_upper_bound, \
+    num_credit_inquiries_lower_bound, num_credit_inquiries_upper_bound, \
+    credit_utilization_ratio_lower_bound, credit_utilization_ratio_upper_bound 
 
-delay_from_due_date_lower_bound, delay_from_due_date_upper_bound = 0, 180
-num_delayed_payments_lower_bound, num_delayed_payments_upper_bound = 0, 50
-num_credit_inquiries_lower_bound, num_credit_inquiries_upper_bound = 0, 20
-credit_utilization_ratio_lower_bound, credit_utilization_ratio_upper_bound = 0, 1
 
-from evaluate import json_data
-
+# produce row of user data from mpc aggregated statistics, as well as load json holding other user info
+# TODO: use phe to encrypt json data
 def generate(mpc_result):
     synthetic_data = generate_from_mpc_result(mpc_result)
-    generate_from_agency(synthetic_data, json_data)
+    user_data = open_json_file('user_data.json')
+    generate_from_agency(synthetic_data, user_data)
+    
     return synthetic_data
 
 
@@ -27,8 +30,7 @@ def generate_from_agency(synthetic_data, agency_info):
 
 def generate_from_mpc_result(mpc_result):
     """use the result from the MPC computation to generate synthetic data that is compatible with the AI model"""
-    # based on avg from the training data
-    Credit_History_Age = "17 Years and 5 Months"
+    # based on avg from the training data: "17 Years and 5 Months"
     Credit_History_Age = 17.42
 
     # below are based on delay_score
@@ -72,3 +74,8 @@ def map_num(original_num, min_num, max_num, min_target, max_target):
 
 def map_from_num_to_str(original_num, min_num, max_num, target_list):
     return target_list[int(map_num(original_num, min_num, max_num, 0, len(target_list)))]
+
+
+def open_json_file(file):
+    with open(file, 'r') as json_file:
+        return json.load(json_file)

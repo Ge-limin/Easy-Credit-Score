@@ -35,19 +35,24 @@ async def main():
     priv_key = None
     pub_key = None
 
+    # user party
     if mpc.pid == 0:
         print("Welcome, user! Waiting for agencies to provide information...")
         pub_key, priv_key = phe.generate_paillier_keypair(n_length = 16)
         pub_n = pub_key.n
     
+    # transmit public key to all agencies
     pub_n = mpc.input(sec_int(pub_n), senders = 0)
     pub_n = await mpc.output(pub_n, receivers = [i for i in range(1,len(mpc.parties))])
     
     if pub_n: 
         pub_key = phe.PaillierPublicKey(pub_n)
 
+    # each agency provides info to get aggregated pay and delay scores
     pay, delay = await get_agency_info(pub_key)
 
+    # user party
+    # decrypt aggregated statistics and use to produce user data for model, get prediction
     if mpc.pid == 0:
         pay = priv_key.decrypt(phe.EncryptedNumber(pub_key, int(pay)))
         delay = priv_key.decrypt(phe.EncryptedNumber(pub_key, int(delay)))
@@ -60,7 +65,6 @@ async def main():
         print("Your predicted credit risk is: ", result)
     else:
         print("Thank you for providing info for user!")
-
 
 
     await mpc.shutdown()
