@@ -183,7 +183,7 @@ def train_model():
 
     df = df.dropna(subset=['Credit_Score'])
 
-    credit_score_mapping = {'Good': 2, 'Standard': 1, 'Poor': 0}
+    credit_score_mapping = {'Good': 1, 'Standard': 0, 'Poor': 0}
     df['Credit_Score'] = df['Credit_Score'].map(credit_score_mapping)
 
     X = df[useful_features]
@@ -249,4 +249,4 @@ def train_model():
     print("Accuracy:", accuracy_score(y_test, y_pred))
     print("Confusion Matrix:\n", confusion_matrix(y_test, y_pred))
     print("Classification Report:\n", classification_report(y_test, y_pred))
-    model.save("checkpoint_encrypted.h5")
+    model.save("checkpoint_binary_encrypted.h5")

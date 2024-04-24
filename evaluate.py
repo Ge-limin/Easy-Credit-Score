@@ -9,7 +9,7 @@ from tensorflow.keras.models import load_model
 import pickle
 import joblib
 
-# todo use phe to encrypt some sensitive data before predicting user data
+# todo pseudo encrypt some sensitive data before predicting user data
 def predict_credit_score(user_data):
     test_data = pd.DataFrame([user_data])
 
@@ -34,7 +34,7 @@ def predict_credit_score(user_data):
     test_data_transformed[np.isnan(test_data_transformed)] = 0
     test_data_transformed = test_data_transformed.reshape((1, test_data_transformed.shape[1], 1))
 
-    model = load_model('checkpoint.h5')
+    model = load_model('checkpoint_binary_encrypted.h5')
 
     y_pred_prob = model.predict(test_data_transformed)
     y_pred = np.argmax(y_pred_prob, axis=1)
