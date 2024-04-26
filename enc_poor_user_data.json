@@ -1,0 +1,22 @@
+{
+    "Age": 2135164718,
+    "Annual_Income": 354845907,
+    "Monthly_Inhand_Salary": 1430067542,
+    "Num_Bank_Accounts": 735327624,
+    "Num_Credit_Card": 1926833684,
+    "Interest_Rate": 763896078,
+    "Num_of_Loan": 576481439,
+    "Occupation": "Media_Manager",
+    "Delay_from_due_date": 30,
+    "Num_of_Delayed_Payment": 14,
+    "Changed_Credit_Limit": 17.13,
+    "Num_Credit_Inquiries": 5,
+    "Credit_Mix": "Standard",
+    "Outstanding_Debt": 1704,
+    "Credit_Utilization_Ratio": 35.171160021263034,
+    "Credit_History_Age": 14.8,
+    "Payment_of_Min_Amount": "Yes",
+    "Total_EMI_per_month": 70.47833267207261,
+    "Amount_invested_monthly": 38.4369827577036,
+    "Monthly_Balance": 392.19618457022375
+}
