@@ -30,7 +30,7 @@ async def main():
     await mpc.start()
     print('All parties have joined! Proceeding...')
     
-    sec_int = mpc.SecInt(16)
+    sec_int = mpc.SecInt(32)
     pub_n = 0
     priv_key = None
     pub_key = None
@@ -49,13 +49,16 @@ async def main():
         pub_key = phe.PaillierPublicKey(pub_n)
 
     # each agency provides info to get aggregated pay and delay scores
-    pay, delay = await get_agency_info(pub_key)
+    pays, delays = await get_agency_info(pub_key)
 
     # user party
     # decrypt aggregated statistics and use to produce user data for model, get prediction
     if mpc.pid == 0:
-        pay = priv_key.decrypt(phe.EncryptedNumber(pub_key, int(pay)))
-        delay = priv_key.decrypt(phe.EncryptedNumber(pub_key, int(delay)))
+        m = len(mpc.parties) - 1
+        pay = sum([phe.EncryptedNumber(pub_key, x) for x in pays])
+        delay = sum([phe.EncryptedNumber(pub_key, x) for x in delays])
+        pay = priv_key.decrypt(pay) / m
+        delay = priv_key.decrypt(delay) / m
 
         mpc_data  = {"payment_score": pay, "delay_score": delay}
         print("Calculating your credit risk now.")
