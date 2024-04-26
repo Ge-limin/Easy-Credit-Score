@@ -7,7 +7,7 @@ async def get_agency_info(pub_key):
     avg_delay_score = -100
 
     # agency parties
-    if mpc.pid != 0:
+    if mpc.pid > 1:
         input('What is your relationship with the user?\n')
         print('Please provide info about the most recent transaction between you and the user.')
 
@@ -23,7 +23,7 @@ async def cal_score(sec_int, transaction_type,pub_key):
     weighted_score = -100
     # agency party
     # request inputs from agencies about transactions of transaction_type: payment, delay
-    if mpc.pid != 0:
+    if mpc.pid > 1:
         weighted_scores = []
         months_ago = int(input(f'How many months ago did last {transaction_type} happen?, If never, enter 100: '))
         amount = int(input(f'Enter the amount of the {transaction_type} in dollars: '))
@@ -38,10 +38,10 @@ async def cal_score(sec_int, transaction_type,pub_key):
         
     
     # collect encrypted scores forom all agencies, then take mean and output
-    all_scores = mpc.input(sec_int(weighted_score), senders = [i for i in range(1,len(mpc.parties))])
+    all_scores = mpc.input(sec_int(weighted_score), senders = [i for i in range(2,len(mpc.parties))])
     if not isinstance(all_scores, list):
         all_scores = [all_scores]
-    avg_score = await mpc.output(all_scores)
+    avg_score = await mpc.output(all_scores, receivers = 0)
     
     return avg_score
 

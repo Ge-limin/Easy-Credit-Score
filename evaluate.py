@@ -40,6 +40,5 @@ def predict_credit_score(user_data):
     y_pred_prob = model.predict(test_data_transformed)
     y_pred = np.argmax(y_pred_prob, axis=1)
 
-    credit_score_mapping = {0: 'Poor', 1: 'Standard', 1: 'Good'}
-    predicted_credit_score = credit_score_mapping[y_pred[0]]
-    return predicted_credit_score
+    predicted_credit_score_idx = y_pred[0]
+    return int(predicted_credit_score_idx)
