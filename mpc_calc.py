@@ -2,7 +2,7 @@ from mpyc.runtime import mpc
 import phe 
 
 async def get_agency_info(pub_key):
-    sec_int = mpc.SecInt(16)
+    sec_int = mpc.SecInt(32)
     avg_payment_score = -100
     avg_delay_score = -100
 
@@ -34,7 +34,6 @@ async def cal_score(sec_int, transaction_type,pub_key):
         print(f"The approximate scores of {transaction_type} is: {weighted_score}")
         
         weighted_score = pub_key.encrypt(weighted_score).ciphertext()
-        print(weighted_score)
         weighted_scores.append(weighted_score)
         
     
@@ -42,8 +41,6 @@ async def cal_score(sec_int, transaction_type,pub_key):
     all_scores = mpc.input(sec_int(weighted_score), senders = [i for i in range(1,len(mpc.parties))])
     if not isinstance(all_scores, list):
         all_scores = [all_scores]
-    # sum_scores = [phe.EncryptedNumber(pub_key, x) for x in all_scores]
-    # sum_scores = sum(all_scores)
     avg_score = await mpc.output(all_scores)
     
     return avg_score

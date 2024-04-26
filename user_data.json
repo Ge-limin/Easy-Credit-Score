@@ -1,22 +1,10 @@
 {
-    "Age": 25,
+    "Age": 21,
     "Occupation": "Teacher",
-    "Annual_Income": 50000,
+    "Annual_Income": 12000,
     "Monthly_Inhand_Salary": 4000,
     "Num_Bank_Accounts": 2,
     "Num_Credit_Card": 1,
     "Interest_Rate": 5.5,
-    "Num_of_Loan": 1,
-    "Delay_from_due_date": 0,
-    "Num_of_Delayed_Payment": 0,
-    "Changed_Credit_Limit": 1000,
-    "Num_Credit_Inquiries": 1,
-    "Credit_Mix": "Standard",
-    "Outstanding_Debt": 5000,
-    "Credit_Utilization_Ratio": 0.3,
-    "Credit_History_Age": "17 Years and 5 Months",
-    "Payment_of_Min_Amount": "No",
-    "Total_EMI_per_month": 500,
-    "Amount_invested_monthly": 1000,
-    "Monthly_Balance": 3000
+    "Num_of_Loan": 1
 }

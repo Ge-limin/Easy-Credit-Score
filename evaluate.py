@@ -8,10 +8,11 @@ from sklearn.pipeline import Pipeline
 from tensorflow.keras.models import load_model
 import pickle
 import joblib
+from ml import add_pseudo_encryption
 
-# todo pseudo encrypt some sensitive data before predicting user data
 def predict_credit_score(user_data):
     test_data = pd.DataFrame([user_data])
+    test_data = add_pseudo_encryption(test_data)
 
     numeric_features = ['Age', 'Annual_Income', 'Monthly_Inhand_Salary', 'Num_Bank_Accounts', 'Num_Credit_Card', 'Interest_Rate', 'Num_of_Loan', 'Delay_from_due_date', 'Num_of_Delayed_Payment', 'Changed_Credit_Limit', 'Num_Credit_Inquiries', 'Outstanding_Debt', 'Credit_Utilization_Ratio', 'Credit_History_Age', 'Total_EMI_per_month', 'Amount_invested_monthly', 'Monthly_Balance']
     categorical_features = ['Occupation', 'Credit_Mix', 'Payment_of_Min_Amount']
@@ -34,11 +35,11 @@ def predict_credit_score(user_data):
     test_data_transformed[np.isnan(test_data_transformed)] = 0
     test_data_transformed = test_data_transformed.reshape((1, test_data_transformed.shape[1], 1))
 
-    model = load_model('checkpoint_binary_encrypted.h5')
+    model = load_model('checkpoint_encrypted2.h5')
 
     y_pred_prob = model.predict(test_data_transformed)
     y_pred = np.argmax(y_pred_prob, axis=1)
 
-    credit_score_mapping = {0: 'Poor', 1: 'Good'}
+    credit_score_mapping = {0: 'Poor', 1: 'Standard', 1: 'Good'}
     predicted_credit_score = credit_score_mapping[y_pred[0]]
     return predicted_credit_score

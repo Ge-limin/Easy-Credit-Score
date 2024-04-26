@@ -7,10 +7,9 @@ from ml import delay_from_due_date_lower_bound, delay_from_due_date_upper_bound,
 
 
 # produce row of user data from mpc aggregated statistics, as well as load json holding other user info
-# TODO: use phe to encrypt json data
 def generate(mpc_result):
     synthetic_data = generate_from_mpc_result(mpc_result)
-    user_data = open_json_file('user_data.json')
+    user_data = open_json_file('poor_user_data.json')
     generate_from_agency(synthetic_data, user_data)
     
     return synthetic_data
