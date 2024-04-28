@@ -20,11 +20,11 @@ The third party agencies are asked to provide information about their recent tra
 
 ### Step 3. Server Processes Data:
 
-The server loads the user's sensitive financial data from a file and immediately pseudo-encrypts it. When it has received and decrypted the aggregated scores from the MPC threads, it compiles the data and the scores into one dataframe. The trained neural network model is loaded and the dataframe is passed in to produce the prediction of the user's credit risk: 'Poor' or 'Good'. This prediction is once again encrypted with the public key and sent to the user and the company's servers.
+The server loads the user's sensitive financial data from a file and immediately pseudo-encrypts it. When it has received and decrypted the aggregated scores from the MPC threads, it compiles the data and the scores into one dataframe. The trained neural network model is loaded and the dataframe is passed in to produce the prediction of the user's credit risk: 'Poor' or 'Good'. This prediction is securely sent to the user and the company's servers.
 
 ### Step 4. Results Shared:
 
-The user and company receive the encrypted result, which they then decrypt using the private key. They both now have access to the user's predicted credit risk and may use it for next steps in the loan application process.
+The user and company receive the result through the MPC protocol. They both now have access to the user's predicted credit risk and may use it for next steps in the loan application process.
 
 ## Installation
 
