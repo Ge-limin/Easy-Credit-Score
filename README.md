@@ -3,7 +3,7 @@ Introducing EasyCredit, a streamlined credit assessing system designed for moder
 
 EasyCredit leverages technologies such as Multi-Party Computation (MPC), Homomorphic Encryption and Neural Networks to ensure the highest levels of security, privacy, and efficiency. By employing these advanced techniques, EasyCredit guarantees that your financial information remains confidential throughout the credit assessment process.
 
-## Workflow:
+## Workflow
 Parties:
 
 - User: the individual whose credit risk is being assessed
@@ -26,7 +26,15 @@ The server loads the user's sensitive financial data from a file and immediately
 
 The user and company receive the encrypted result, which they then decrypt using the private key. They both now have access to the user's predicted credit risk and may use it for next steps in the loan application process.
 
-## Demo Usage:
+## Installation
+
+Python 3.11 is required, as well as the following libraries:
+
+- tensorflow
+- mpyc
+- python-paillier
+
+## Demo Usage
 
 The program is run from demo.py, and each party runs its own version of the file in an individual terminal window with a modified command. The value attached to the -M flag indicated how many total parties are expected to join, while the values attached to the -I flag indicate the identity of the party. I0 denotes the user, I1 denotes the company, and I2...N indicate the third party agencies.
 
